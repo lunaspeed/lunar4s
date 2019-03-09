@@ -4,16 +4,25 @@ import java.time.{LocalDate, LocalDateTime}
 import java.util.Date
 import LunarDate.LunarResult
 
+/**
+  *
+  * @param year
+  * @param month
+  * @param date
+  * @param hour
+  * @param lunarHour
+  * @param isLeap
+  */
 case class LunarDate(year: Int, month: Int, date: Int, hour: Int, lunarHour: Int, val isLeap: Boolean) {
 
   /**
-    * Convert to {@link java.time.LocalDate} in AD.
+    * Convert to java.time.LocalDate in AD.
     * @return equivalent date in LocalDate
     */
   def toLocalDate(): LunarResult[LocalDate] = LunarDate.fromLunar(year, month, date, isLeap)
 
   /**
-    * Convert to {@link java.util.Date} in AD.
+    * Convert to java.util.Date in AD.
     * @return equivalent date in Date
     */
   def toDate(): LunarResult[Date] = LunarDate.fromLunar(year, month, date, isLeap) map {java.sql.Date.valueOf(_)}
@@ -41,21 +50,21 @@ object LunarDate {
   type LunarResult[A] = Either[LunarDateArgumentException, A]
 
   /**
-    * Convert from AD date to Lunar date using {@link java.util.Date}.
+    * Convert from AD date to Lunar date using {@code java.util.Date}.
     * @param date date to convert
     * @return lunar date representation of {@code date} or {@link LunarDateArgumentException} if year is not supported
     */
   def toLunar(date: Date): LunarResult[LunarDate] = toLunar(new java.sql.Timestamp(date.getTime()).toLocalDateTime())
 
   /**
-    * Convert from AD date to Lunar date using {@link java.time.LocalDate} with time at midnight.
+    * Convert from AD date to Lunar date using {@code java.time.LocalDate} with time at midnight.
     * @param date date to convert
     * @return lunar date representation of {@code date} or {@link LunarDateArgumentException} if year is not supported
     */
   def toLunar(date: LocalDate): LunarResult[LunarDate] = toLunar(date.atStartOfDay())
 
   /**
-    * Convert from AD date to Lunar date using {@link java.time.LocalDateTime}.
+    * Convert from AD date to Lunar date using {@code java.time.LocalDateTime}.
     * @param date date to convert
     * @return lunar date representation of {@code date} or {@link LunarDateArgumentException} if year is not supported
     */
@@ -152,7 +161,7 @@ object LunarDate {
     * @param lunarMonth lunar month
     * @param lunarDate lunar date
     * @param isLeap is the lunar month a leap month
-    * @return {@link LocalDate} representation of Lunar date in AD or {@link LunarDateArgumentException} if parameter is not accepted.
+    * @return {@code LocalDate} representation of Lunar date in AD or {@link LunarDateArgumentException} if parameter is not accepted.
     */
   def fromLunar(lunarYear: Int, lunarMonth: Int, lunarDate: Int, isLeap: Boolean): LunarResult[LocalDate] = {
 
@@ -175,8 +184,8 @@ object LunarDate {
       val lytd = daysLunarYearToDate(lunarYear, lunarMonth, lunarDate, isLeap)
 
       var dateDiff = lytd - 1 + chineseNewYearOffset(lunarYear)
-      val diy = daysInYear(lunarYear)
 
+      val diy = daysInYear(lunarYear)
       if (dateDiff >= diy) {
         dateDiff = dateDiff - diy
         year = lunarYear + 1
@@ -236,11 +245,7 @@ object LunarDate {
 
   private def leapMonth(year: Int): Int = (LUNAR_CONSTANTS(year - BASE_YEAR) >> 20)
 
-
-  private def daysOfLeapMonth(year: Int): Int = {
-    val lm = leapMonth(year)
-    daysInLunarMonth(year, lm)
-  }
+  private def daysOfLeapMonth(year: Int): Int = daysInLunarMonth(year, leapMonth(year))
 
   /**
     *
@@ -252,9 +257,8 @@ object LunarDate {
     * 12月 & 閏3月 => 12
     * @return
     */
-  private def isBigMonth(year: Int, monthIndex: Int): Boolean = {
-    ((LUNAR_CONSTANTS(year - BASE_YEAR)) & (0x80000 >> monthIndex)) != 0
-  }
+  private def isBigMonth(year: Int, monthIndex: Int): Boolean = ((LUNAR_CONSTANTS(year - BASE_YEAR)) & (0x80000 >> monthIndex)) != 0
+
 
   //  11010110101011100111101
   //  10
@@ -276,7 +280,7 @@ object LunarDate {
       29
     }
 
-  private def daysInMonth(year: Int, month: Int): Int = {
+  private def daysInMonth(year: Int, month: Int): Int =
     if (month % 2 == (if (month < 8) 1 else 0)) {
       31 //大月31天
     } else if (month == 2) {
@@ -284,7 +288,7 @@ object LunarDate {
     } else {
       30 //小月30天
     }
-  }
+
 
   private def chineseNewYearOffset(year: Int): Int = {
     val lc = LUNAR_CONSTANTS(year - BASE_YEAR)
@@ -294,7 +298,7 @@ object LunarDate {
     else date) - 1
   }
 
-  def daysInMonth(year: Int, month: Int, isLeap: Boolean): Int = {
+  private def daysInMonth(year: Int, month: Int, isLeap: Boolean): Int = {
 
     var m = month
     val lMonth = leapMonth(year)
