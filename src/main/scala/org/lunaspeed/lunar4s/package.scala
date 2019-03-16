@@ -1,4 +1,4 @@
-package org.lunary
+package org.lunaspeed
 
 import java.time.LocalDateTime
 
@@ -28,7 +28,8 @@ package object lunar4s {
     0x0D5252,0x0DAA47,0x66B53B,0x056D4F,0x04AE45,0x4A4EB9,0x0A4D4C,0x0D1541,0x2D92B5          /*2091-2099*/)
 
 
-  private[lunar4s] final val BASE_DATE = LocalDateTime.of(1900, 1, 31, 0, 0)
-  private[lunar4s] final val BASE_YEAR = BASE_DATE.getYear
-  private[lunar4s] final val MAX_YEAR = 2099
+  final val BASE_DATE = LocalDateTime.of(1900, 1, 31, 0, 0)
+  final val BASE_YEAR = BASE_DATE.getYear
+  final val MAX_YEAR = 2099
+
 }

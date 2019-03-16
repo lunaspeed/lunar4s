@@ -1,10 +1,8 @@
 name := "lunar4s"
 
-useGpg := true
-
 version := "1.0.0"
 
-organization := "org.lunary" 
+organization := "org.lunaspeed" 
 
 libraryDependencies ++= {
   Seq(
@@ -14,13 +12,6 @@ libraryDependencies ++= {
 
 scalacOptions += "-Ypartial-unification"
 
-javacOptions ++= Seq("-encoding", "UTF-8")
+//scalacOptions ++= Seq("-groups", "-implicits", "-external-urls:[https://docs.oracle.com/en/java/javase/11/docs/api]")
 
-pomExtra :=
-  <licenses>
-    <license>
-      <name>MIT License</name>
-      <url>http://www.opensource.org/licenses/mit-license.php</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+javacOptions ++= Seq("-encoding", "UTF-8")

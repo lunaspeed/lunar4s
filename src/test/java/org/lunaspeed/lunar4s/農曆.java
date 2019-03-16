@@ -1,5 +1,5 @@
 
-package org.lunary.lunar4s;
+package org.lunaspeed.lunar4s;
 
 import java.time.LocalTime;
 import java.util.ArrayList;

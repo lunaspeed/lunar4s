@@ -1,8 +1,7 @@
-package org.lunary.lunar4s
+package org.lunaspeed.lunar4s
 
 import java.time.{LocalDate, LocalDateTime}
 import java.util.Date
-import LunarDate.LunarResult
 
 /**
   *
@@ -15,17 +14,25 @@ import LunarDate.LunarResult
   */
 case class LunarDate(year: Int, month: Int, date: Int, hour: Int, lunarHour: Int, val isLeap: Boolean) {
 
+  import LunarDate.LunarResult
+
   /**
-    * Convert to java.time.LocalDate in AD.
+    * Convert to {@link java.time.LocalDate} in AD.
     * @return equivalent date in LocalDate
     */
   def toLocalDate(): LunarResult[LocalDate] = LunarDate.fromLunar(year, month, date, isLeap)
 
   /**
-    * Convert to java.util.Date in AD.
+    * Convert to {@link java.util.Date} in AD.
     * @return equivalent date in Date
     */
   def toDate(): LunarResult[Date] = LunarDate.fromLunar(year, month, date, isLeap) map {java.sql.Date.valueOf(_)}
+
+  /**
+    * Convert to {@link java.time.LocalDate} in AD.
+    * @return equivalent date in Date
+    */
+  def toLocalDateTime(): LunarResult[LocalDateTime] = LunarDate.fromLunar(year, month, date, isLeap, hour)
 
   /**
     * Stem (天干) of the year, in form of index starting from 0.
@@ -40,6 +47,7 @@ case class LunarDate(year: Int, month: Int, date: Int, hour: Int, lunarHour: Int
   def yearBranch(): Int = LunarDate.yearBranchIndex(year)
 }
 
+
 class LunarDateArgumentException(message: String) extends RuntimeException(message)
 case object YearOutOfRangeException extends LunarDateArgumentException(s"year is out of range $BASE_YEAR - $MAX_YEAR")
 case object MonthOutOfRangeException extends LunarDateArgumentException(s"month is out of range 1 - 12")
@@ -50,21 +58,21 @@ object LunarDate {
   type LunarResult[A] = Either[LunarDateArgumentException, A]
 
   /**
-    * Convert from AD date to Lunar date using {@code java.util.Date}.
+    * Convert from AD date to Lunar date using {@link java.util.Date}.
     * @param date date to convert
     * @return lunar date representation of {@code date} or {@link LunarDateArgumentException} if year is not supported
     */
   def toLunar(date: Date): LunarResult[LunarDate] = toLunar(new java.sql.Timestamp(date.getTime()).toLocalDateTime())
 
   /**
-    * Convert from AD date to Lunar date using {@code java.time.LocalDate} with time at midnight.
+    * Convert from AD date to Lunar date using {@link java.time.LocalDate} with time at midnight.
     * @param date date to convert
     * @return lunar date representation of {@code date} or {@link LunarDateArgumentException} if year is not supported
     */
   def toLunar(date: LocalDate): LunarResult[LunarDate] = toLunar(date.atStartOfDay())
 
   /**
-    * Convert from AD date to Lunar date using {@code java.time.LocalDateTime}.
+    * Convert from AD date to Lunar date using {@link java.time.LocalDateTime}.
     * @param date date to convert
     * @return lunar date representation of {@code date} or {@link LunarDateArgumentException} if year is not supported
     */
@@ -161,9 +169,20 @@ object LunarDate {
     * @param lunarMonth lunar month
     * @param lunarDate lunar date
     * @param isLeap is the lunar month a leap month
-    * @return {@code LocalDate} representation of Lunar date in AD or {@link LunarDateArgumentException} if parameter is not accepted.
+    * @return {@link java.time.LocalDate} representation of Lunar date in AD or {@link LunarDateArgumentException} if parameter is not accepted.
     */
-  def fromLunar(lunarYear: Int, lunarMonth: Int, lunarDate: Int, isLeap: Boolean): LunarResult[LocalDate] = {
+  def fromLunar(lunarYear: Int, lunarMonth: Int, lunarDate: Int, isLeap: Boolean): LunarResult[LocalDate] = fromLunar(lunarYear, lunarMonth, lunarDate, isLeap, 0) map {_.toLocalDate}
+
+  /**
+    * Convert Lunar date to AD date.
+    * @param lunarYear lunar year
+    * @param lunarMonth lunar month
+    * @param lunarDate lunar date
+    * @param isLeap is the lunar month a leap month
+    * @param hour the hour of date, default 0
+    * @return {@link java.time.LocalDateTime} representation of Lunar date in AD or {@link LunarDateArgumentException} if parameter is not accepted.
+    */
+  def fromLunar(lunarYear: Int, lunarMonth: Int, lunarDate: Int, isLeap: Boolean, hour: Int = 0): LunarResult[LocalDateTime] = {
 
     if (lunarYear < BASE_YEAR || lunarYear > MAX_YEAR) { //若年份超出範圍
       Left(YearOutOfRangeException)
@@ -201,7 +220,7 @@ object LunarDate {
 
       date = dateDiff + 1
 
-      Right(LocalDate.of(year, month, date))
+      Right(LocalDateTime.of(year, month, date, hour, 0))
     }
   }
 
@@ -322,6 +341,7 @@ object LunarDate {
 
   implicit class LocalDateTimeConvert(date: LocalDateTime) {
     def toLunar(): LunarResult[LunarDate] = LunarDate.toLunar(date)
+    @throws("LunarDateArgumentException")
     def toLunarUnsafe(): LunarDate = LunarDate.toLunar(date) match {
       case Right(d) => d
       case Left(e) => throw e
@@ -330,6 +350,7 @@ object LunarDate {
 
   implicit class LocalDateConvert(date: LocalDate) {
     def toLunar(): LunarResult[LunarDate] = LunarDate.toLunar(date)
+    @throws("LunarDateArgumentException")
     def toLunarUnsafe(): LunarDate = LunarDate.toLunar(date) match {
       case Right(d) => d
       case Left(e) => throw e
@@ -338,6 +359,7 @@ object LunarDate {
 
   implicit class UtilDateConvert(date: Date) {
     def toLunar(): LunarResult[LunarDate] = LunarDate.toLunar(date)
+    @throws("LunarDateArgumentException")
     def toLunarUnsafe(): LunarDate = LunarDate.toLunar(date) match {
       case Right(d) => d
       case Left(e) => throw e
