@@ -1,8 +1,8 @@
 name := "lunar4s"
 
-version := "1.0.0"
+organization := "org.lunaspeed"
 
-organization := "org.lunaspeed" 
+version := "1.0.0"
 
 libraryDependencies ++= {
   Seq(
@@ -11,7 +11,5 @@ libraryDependencies ++= {
 }
 
 scalacOptions += "-Ypartial-unification"
-
-//scalacOptions ++= Seq("-groups", "-implicits", "-external-urls:[https://docs.oracle.com/en/java/javase/11/docs/api]")
 
 javacOptions ++= Seq("-encoding", "UTF-8")

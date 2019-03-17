@@ -1,6 +1,6 @@
 package org.lunaspeed.lunar4s
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 
 import org.lunaspeed.lunar4s.LunarDate._
 import org.scalatest.FlatSpec
@@ -18,7 +18,7 @@ class LunarDateSpec extends FlatSpec {
           println(s"year: ${date.getYear()}, month: ${date.getMonthValue()}, day: ${date.getDayOfMonth()}")
           val 農曆日期 = 農曆.建立(date.getYear(), date.getMonthValue(), date.getDayOfMonth())
 
-          assertResult((農曆日期.取得農曆月().ordinal() + 1) + "/" + (農曆日期.取得農曆日().ordinal() + 1), "lunar month/date does not match Java library")(lunarDate.month + "/" + lunarDate.getDate)
+          assertResult((農曆日期.取得農曆月().ordinal() + 1) + "/" + (農曆日期.取得農曆日().ordinal() + 1), "lunar month/date does not match Java library")(lunarDate.month + "/" + lunarDate.date)
           assertResult(農曆日期.是否為閏月(), "lunar month lear does not match java library")(lunarDate.isLeap)
 
           println("------------")
@@ -56,5 +56,17 @@ class LunarDateSpec extends FlatSpec {
 
     val converted2 = ld2.toLunarUnsafe().toLocalDate()
     assertResult(ld2, "should match 1983-06-05 when converted back")(converted2.toOption.get)
+  }
+
+  "Hour" should "convert to shichen" in {
+
+    val ld = LocalDate.now().withYear(1930).withMonth(7).withDayOfMonth(27)
+    for (h <- 0 until 24) {
+      val ldt = ld.atTime(h, 0)
+
+      assertResult((h + 1)/2)(ldt.toLunarUnsafe().lunarHour)
+
+     // println(s"hour: ${h}, lunar hour: ${ldt.toLunarUnsafe().lunarHour}")
+    }
   }
 }

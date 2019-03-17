@@ -3,14 +3,18 @@ package org.lunaspeed.lunar4s
 import java.time.{LocalDate, LocalDateTime}
 import java.util.Date
 
+import org.lunaspeed.lunar4s.LunarDateExtra.Branches.Branch
+import org.lunaspeed.lunar4s.LunarDateExtra.{Branches, Stems}
+import org.lunaspeed.lunar4s.LunarDateExtra.Stems.Stem
+
 /**
-  *
-  * @param year
-  * @param month
-  * @param date
-  * @param hour
-  * @param lunarHour
-  * @param isLeap
+  * Constructor.
+  * @param year year of Lunar date
+  * @param month month of Lunar date
+  * @param date date of Lunar date
+  * @param hour hour of original DateTime
+  * @param lunarHour lunar hour in terms of Stem(天) or so called 時辰, value from 0 ~ 12.
+  * @param isLeap is the month a leap month （閏月）
   */
 case class LunarDate(year: Int, month: Int, date: Int, hour: Int, lunarHour: Int, val isLeap: Boolean) {
 
@@ -36,15 +40,37 @@ case class LunarDate(year: Int, month: Int, date: Int, hour: Int, lunarHour: Int
 
   /**
     * Stem (天干) of the year, in form of index starting from 0.
-    * @return stem of the year
+    * @return stem index of the year
     */
-  def yearStem(): Int = LunarDate.yearStemIndex(year)
+  def yearStemIndex(): Int = LunarDate.yearStemIndex(year)
+
+  /**
+    * Stem (天干) of the year.
+    * @return stem of the year
+    * @see [[org.lunaspeed.lunar4s.LunarDateExtra.Stems#getYearStem]]
+    */
+  def yearStem(): Stem = Stems.getYearStem(yearStemIndex())
+
 
   /**
     * Branch (地支) of th year, in form of index starting from 0.
-    * @return branch of the year
+    * @return branch index of the year
     */
-  def yearBranch(): Int = LunarDate.yearBranchIndex(year)
+  def yearBranchIndex(): Int = LunarDate.yearBranchIndex(year)
+
+  /**
+    * Branch (地支) of th year.
+    * @return branch of the year
+    * @see [[org.lunaspeed.lunar4s.LunarDateExtra.Branches#getYearBranch]]
+    */
+  def yearBranch(): Branch = Branches.getYearBranch(yearBranchIndex())
+
+  /**
+    * Stem of the Lunar hour (時辰).
+    * @return hour stem
+    * @see [[org.lunaspeed.lunar4s.LunarDateExtra.Stems#getHourStem]]
+    */
+  def hourStem(): Stem = Stems.getHourStem(lunarHour)
 }
 
 
@@ -224,7 +250,7 @@ object LunarDate {
     }
   }
 
-  def calculateLunarYear(date: LocalDateTime): Int = {
+  private def calculateLunarYear(date: LocalDateTime): Int = {
     val year = date.getYear()
     val dateDiff = daysYearToDate(date)
     val newYearDif = chineseNewYearOffset(year)
