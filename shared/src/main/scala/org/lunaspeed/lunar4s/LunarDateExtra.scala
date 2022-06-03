@@ -1,7 +1,10 @@
 package org.lunaspeed.lunar4s
 
+import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
+
 object LunarDateExtra {
 
+  @JSExportTopLevel("Branches")
   object Branches {
 
     sealed trait Branch
@@ -27,6 +30,7 @@ object LunarDateExtra {
     def getYearBranch(branchIndex: Int): Branch = branches(branchIndex % 10)
   }
 
+  @JSExportTopLevel("Stems")
   object Stems {
     sealed trait Stem
     case object Zi extends Stem

@@ -3,9 +3,10 @@ package org.lunaspeed.lunar4s
 import java.time.{LocalDate, LocalDateTime}
 
 import org.lunaspeed.lunar4s.LunarDate._
-import org.scalatest.FlatSpec
+import org.scalatest.flatspec._
+import org.scalatest.matchers._
 
-class LunarDateSpec extends FlatSpec {
+class LunarDateSpec extends AnyFlatSpec with should.Matchers {
 
   "lunar dates" should "match java and convert back" in {
 
@@ -18,7 +19,7 @@ class LunarDateSpec extends FlatSpec {
           println(s"year: ${date.getYear()}, month: ${date.getMonthValue()}, day: ${date.getDayOfMonth()}")
           val 農曆日期 = 農曆.建立(date.getYear(), date.getMonthValue(), date.getDayOfMonth())
 
-          assertResult((農曆日期.取得農曆月().ordinal() + 1) + "/" + (農曆日期.取得農曆日().ordinal() + 1), "lunar month/date does not match Java library")(lunarDate.month + "/" + lunarDate.date)
+          assertResult(s"${農曆日期.取得農曆月().ordinal() + 1}/${農曆日期.取得農曆日().ordinal() + 1}", "lunar month/date does not match Java library")(s"${lunarDate.month}/${lunarDate.date}")
           assertResult(農曆日期.是否為閏月(), "lunar month lear does not match java library")(lunarDate.isLeap)
 
           println("------------")
