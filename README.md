@@ -5,12 +5,17 @@ Scala library for converting AD date (西元) to Lunar date (農曆) and back.
 Fully converted from [JavaChineseCalendar](https://github.com/magiclen/JavaChineseCalendar) and tested against it.
 Modified to extend available years range to 1900 to 2099.
 
-Available for 2.11 and 2.12
+Available for 2.11, 2.12 and 2.13.
+Support ScalaJs for 2.12 and 2.13
 
 Add to build.sbt
 
 ```sbtshell
-libraryDependencies += "org.lunaspeed" %% "lunar4s" % "1.0.1"
+//scala
+libraryDependencies += "org.lunaspeed" %% "lunar4s" % "1.1.1"
+
+//scalajs
+libraryDependencies += "org.lunaspeed" %%% "lunar4s" % "1.1.1"
 ```
 
 Usage:
@@ -40,6 +45,31 @@ val localDate = lunarDate.toLocalDate() match {
     throw e  
 }
 
+```
+
+24 Solar Terms (24節氣)
+
+Currently, only support 21st century.
+
+```scala
+
+import org.lunaspeed.lunar4s.SolarTerms
+
+SolarTerms.termAsDate(2017, SolarTerms.SpringCommences)
+// Some(LocalDate.of(2017, 2,3))
+
+
+//get all Solar Terms in one year
+SolarTerms.getYearTerms(2017): Map[SolarTerm, LocalDate]
+
+```
+
+JavaScript
+
+```javascript
+import { LunarDate } from 'lunar4s-opt'
+
+const lunarDate = LunarDate.toLunar(new Date())
 ```
 
 ### TODO
